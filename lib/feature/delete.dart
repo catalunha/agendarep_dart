@@ -1,6 +1,6 @@
 import '../data/b4a/tables/delete_table.dart';
 
-void deleteTable() async {
+Future<void> deleteTable() async {
   DeleteTable deleteTable = DeleteTable();
   await deleteTable.removeBySellerInTable(
       sellerId: 'mwHolsSQ5U', table: 'Region');
