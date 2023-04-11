@@ -1,5 +1,5 @@
 import 'data/b4a/connect_b4a.dart';
-import 'feature/address.dart';
+import 'feature/medical.dart';
 
 void app() async {
   ConnectB4A connectB4A = ConnectB4A();
@@ -7,7 +7,7 @@ void app() async {
 
   // deleteTable();
   // region();
-  address();
-  // publisherPage();
+  // address();
+  medical();
   // bookPage();
 }
