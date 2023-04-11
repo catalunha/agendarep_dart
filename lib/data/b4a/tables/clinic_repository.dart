@@ -6,7 +6,7 @@ import 'secretary_repository.dart';
 
 class ClinicRepository {
   Future<String?> duplicateOne(
-      {required String sellerReceiver, required String id}) async {
+      {required String sellerIdReceiver, required String id}) async {
     final parseObjectDonate = ParseObject('Clinic');
     ParseResponse parseResponse = await parseObjectDonate.getObject(id);
     if (parseResponse.success && parseResponse.results != null) {
@@ -16,8 +16,10 @@ class ClinicRepository {
           'Clinic. Duplicando da origem: ${parseObjectDonateResult.objectId}');
 
       final parseObjectReceiver = ParseObject('Clinic');
-      parseObjectReceiver.set('seller',
-          (ParseObject('UserProfile')..objectId = sellerReceiver).toPointer());
+      parseObjectReceiver.set(
+          'seller',
+          (ParseObject('UserProfile')..objectId = sellerIdReceiver)
+              .toPointer());
       parseObjectReceiver.set('name', parseObjectDonateResult.get('name'));
       parseObjectReceiver.set('phone', parseObjectDonateResult.get('phone'));
       parseObjectReceiver.set('room', parseObjectDonateResult.get('room'));
@@ -30,7 +32,7 @@ class ClinicRepository {
 
         String? medicalId = await medicalRepository.duplicateOne(
           id: parseObject.objectId!,
-          sellerReceiver: sellerReceiver,
+          sellerIdReceiver: sellerIdReceiver,
         );
         if (medicalId != null) {
           parseObjectReceiver.set('medical',
@@ -46,7 +48,7 @@ class ClinicRepository {
 
         String? addressId = await addressRepository.duplicateOne(
           id: parseObject.objectId!,
-          sellerReceiver: sellerReceiver,
+          sellerIdReceiver: sellerIdReceiver,
         );
         if (addressId != null) {
           parseObjectReceiver.set('address',
@@ -69,7 +71,7 @@ class ClinicRepository {
         for (ParseObject e in parseResponseSecretary.results!) {
           SecretaryRepository secretaryRepository = SecretaryRepository();
           String? newId = await secretaryRepository.duplicateOne(
-              sellerReceiver: sellerReceiver, id: e.objectId!);
+              sellerIdReceiver: sellerIdReceiver, id: e.objectId!);
           if (newId != null) {
             secretaryIds.add(newId);
           }
@@ -93,15 +95,20 @@ class ClinicRepository {
     return null;
   }
 
-  Future<void> duplicateAll({required String sellerReceiver}) async {
-    final parseObject = ParseObject('Clinic');
-    ParseResponse parseResponse = await parseObject.getAll();
+  Future<void> duplicateAll(
+      {required String sellerIdReceiver,
+      required String sellerIdDonate}) async {
+    QueryBuilder<ParseObject> query =
+        QueryBuilder<ParseObject>(ParseObject('Clinic'));
+    query.whereEqualTo('seller',
+        (ParseObject('UserProfile')..objectId = sellerIdDonate).toPointer());
+    ParseResponse parseResponse = await query.query();
 
     if (parseResponse.success && parseResponse.results != null) {
       for (ParseObject element in parseResponse.results!) {
         print('Duplicanto Clinic id: ${element.objectId}');
         await duplicateOne(
-            sellerReceiver: sellerReceiver, id: element.objectId!);
+            sellerIdReceiver: sellerIdReceiver, id: element.objectId!);
       }
     }
   }

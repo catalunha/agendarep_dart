@@ -4,7 +4,7 @@ import 'region_repository.dart';
 
 class AddressRepository {
   Future<String?> duplicateOne(
-      {required String sellerReceiver, required String id}) async {
+      {required String sellerIdReceiver, required String id}) async {
     final parseObjectDonate = ParseObject('Address');
     ParseResponse parseResponse = await parseObjectDonate.getObject(id);
     if (parseResponse.success && parseResponse.results != null) {
@@ -14,8 +14,10 @@ class AddressRepository {
           'Address. Duplicando da origem: ${parseObjectDonateResult.objectId}');
 
       final parseObjectReceiver = ParseObject('Address');
-      parseObjectReceiver.set('seller',
-          (ParseObject('UserProfile')..objectId = sellerReceiver).toPointer());
+      parseObjectReceiver.set(
+          'seller',
+          (ParseObject('UserProfile')..objectId = sellerIdReceiver)
+              .toPointer());
       parseObjectReceiver.set('name', parseObjectDonateResult.get('name'));
       parseObjectReceiver.set('phone', parseObjectDonateResult.get('phone'));
       parseObjectReceiver.set(
@@ -31,7 +33,7 @@ class AddressRepository {
 
         String? regionId = await regionRepository.duplicateOne(
           id: parseObject.objectId!,
-          sellerReceiver: sellerReceiver,
+          sellerIdReceiver: sellerIdReceiver,
         );
         if (regionId != null) {
           parseObjectReceiver.set('region',
@@ -52,15 +54,20 @@ class AddressRepository {
     return null;
   }
 
-  Future<void> duplicateAll({required String sellerReceiver}) async {
-    final parseObject = ParseObject('Address');
-    ParseResponse parseResponse = await parseObject.getAll();
+  Future<void> duplicateAll(
+      {required String sellerIdReceiver,
+      required String sellerIdDonate}) async {
+    QueryBuilder<ParseObject> query =
+        QueryBuilder<ParseObject>(ParseObject('Address'));
+    query.whereEqualTo('seller',
+        (ParseObject('UserProfile')..objectId = sellerIdDonate).toPointer());
+    ParseResponse parseResponse = await query.query();
 
     if (parseResponse.success && parseResponse.results != null) {
       for (ParseObject element in parseResponse.results!) {
         print('Duplicanto Address id: ${element.objectId}');
         await duplicateOne(
-            sellerReceiver: sellerReceiver, id: element.objectId!);
+            sellerIdReceiver: sellerIdReceiver, id: element.objectId!);
       }
     }
   }

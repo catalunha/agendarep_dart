@@ -2,7 +2,7 @@ import 'package:parse_server_sdk/parse_server_sdk.dart';
 
 class SecretaryRepository {
   Future<String?> duplicateOne(
-      {required String sellerReceiver, required String id}) async {
+      {required String sellerIdReceiver, required String id}) async {
     final parseObjectDonate = ParseObject('Secretary');
     ParseResponse parseResponse = await parseObjectDonate.getObject(id);
     if (parseResponse.success && parseResponse.results != null) {
@@ -12,8 +12,10 @@ class SecretaryRepository {
           'Secretary. Duplicando da origem: ${parseObjectDonateResult.objectId}');
 
       final parseObjectReceiver = ParseObject('Secretary');
-      parseObjectReceiver.set('seller',
-          (ParseObject('UserProfile')..objectId = sellerReceiver).toPointer());
+      parseObjectReceiver.set(
+          'seller',
+          (ParseObject('UserProfile')..objectId = sellerIdReceiver)
+              .toPointer());
       parseObjectReceiver.set('email', parseObjectDonateResult.get('email'));
       parseObjectReceiver.set('name', parseObjectDonateResult.get('name'));
       parseObjectReceiver.set('phone', parseObjectDonateResult.get('phone'));
@@ -32,15 +34,19 @@ class SecretaryRepository {
     return null;
   }
 
-  Future<void> duplicateAll({required String sellerReceiver}) async {
-    final parseObject = ParseObject('Secretary');
-    ParseResponse parseResponse = await parseObject.getAll();
-
+  Future<void> duplicateAll(
+      {required String sellerIdReceiver,
+      required String sellerIdDonate}) async {
+    QueryBuilder<ParseObject> query =
+        QueryBuilder<ParseObject>(ParseObject('Secretary'));
+    query.whereEqualTo('seller',
+        (ParseObject('UserProfile')..objectId = sellerIdDonate).toPointer());
+    ParseResponse parseResponse = await query.query();
     if (parseResponse.success && parseResponse.results != null) {
       for (ParseObject element in parseResponse.results!) {
         print('Duplicando Secretary id: ${element.objectId}');
         await duplicateOne(
-            sellerReceiver: sellerReceiver, id: element.objectId!);
+            sellerIdReceiver: sellerIdReceiver, id: element.objectId!);
       }
     }
   }

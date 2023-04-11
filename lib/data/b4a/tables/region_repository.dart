@@ -2,7 +2,7 @@ import 'package:parse_server_sdk/parse_server_sdk.dart';
 
 class RegionRepository {
   Future<String?> duplicateOne(
-      {required String sellerReceiver, required String id}) async {
+      {required String sellerIdReceiver, required String id}) async {
     final parseObjectDonate = ParseObject('Region');
     ParseResponse parseResponse = await parseObjectDonate.getObject(id);
     if (parseResponse.success && parseResponse.results != null) {
@@ -12,8 +12,10 @@ class RegionRepository {
           'Region. Duplicando da origem: ${parseObjectDonateResult.objectId}');
 
       final parseObjectReceiver = ParseObject('Region');
-      parseObjectReceiver.set('seller',
-          (ParseObject('UserProfile')..objectId = sellerReceiver).toPointer());
+      parseObjectReceiver.set(
+          'seller',
+          (ParseObject('UserProfile')..objectId = sellerIdReceiver)
+              .toPointer());
       parseObjectReceiver.set('uf', parseObjectDonateResult.get('uf'));
       parseObjectReceiver.set('city', parseObjectDonateResult.get('city'));
       parseObjectReceiver.set('name', parseObjectDonateResult.get('name'));
@@ -28,15 +30,20 @@ class RegionRepository {
     return null;
   }
 
-  Future<void> duplicateAll({required String sellerReceiver}) async {
-    final parseObject = ParseObject('Region');
-    ParseResponse parseResponse = await parseObject.getAll();
+  Future<void> duplicateAll(
+      {required String sellerIdReceiver,
+      required String sellerIdDonate}) async {
+    QueryBuilder<ParseObject> query =
+        QueryBuilder<ParseObject>(ParseObject('Region'));
+    query.whereEqualTo('seller',
+        (ParseObject('UserProfile')..objectId = sellerIdDonate).toPointer());
+    ParseResponse parseResponse = await query.query();
 
     if (parseResponse.success && parseResponse.results != null) {
       for (ParseObject element in parseResponse.results!) {
         print('Duplicando Region id: ${element.objectId}');
         await duplicateOne(
-            sellerReceiver: sellerReceiver, id: element.objectId!);
+            sellerIdReceiver: sellerIdReceiver, id: element.objectId!);
       }
     }
   }
