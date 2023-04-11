@@ -12,4 +12,6 @@ void deleteTable() async {
       sellerId: 'mwHolsSQ5U', table: 'Medical');
   await deleteTable.removeBySellerInTable(
       sellerId: 'mwHolsSQ5U', table: 'Clinic');
+  await deleteTable.removeBySellerInTable(
+      sellerId: 'mwHolsSQ5U', table: 'Schedule');
 }

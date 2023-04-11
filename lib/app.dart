@@ -1,5 +1,5 @@
 import 'data/b4a/connect_b4a.dart';
-import 'feature/clinic.dart';
+import 'feature/schedule.dart';
 
 void app() async {
   ConnectB4A connectB4A = ConnectB4A();
@@ -10,5 +10,6 @@ void app() async {
   // address();
   // medical();
   // secretary();
-  clinic();
+  // clinic();
+  schedule();
 }

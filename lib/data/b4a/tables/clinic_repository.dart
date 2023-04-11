@@ -5,7 +5,7 @@ import 'medical_repository.dart';
 import 'secretary_repository.dart';
 
 class ClinicRepository {
-  Future<String?> duplicateOne(
+  Future<ParseObject?> duplicateOne(
       {required String sellerIdReceiver, required String id}) async {
     final parseObjectDonate = ParseObject('Clinic');
     ParseResponse parseResponse = await parseObjectDonate.getObject(id);
@@ -88,7 +88,7 @@ class ClinicRepository {
           ids: secretaryIds,
           add: true,
         );
-        return parseObjectReceiverResult.objectId;
+        return parseObjectReceiverResult;
       }
       return null;
     }
