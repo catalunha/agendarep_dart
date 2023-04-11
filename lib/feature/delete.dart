@@ -1,6 +1,7 @@
-import '../data/b4a/delete_table.dart';
+import '../data/b4a/tables/delete_table.dart';
 
-void deleteTable(String table) {
+void deleteTable() {
   DeleteTable deleteTable = DeleteTable();
   deleteTable.removeBySellerInTable(sellerId: 'mwHolsSQ5U', table: 'Region');
+  deleteTable.removeBySellerInTable(sellerId: 'mwHolsSQ5U', table: 'Address');
 }
