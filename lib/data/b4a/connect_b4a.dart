@@ -4,8 +4,8 @@ import 'dart:io';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 
 class ConnectB4A {
-  final String _appId = 'VtcsOwYidKPYKz4gTXbLELZXEiu0s5xbo4JGu3wJ';
-  final String _clientKey = 'glVe7bAt5ve2fbPFUOyridy8goa21Ch9jMA0hR1i';
+  final String _appId = '';
+  final String _clientKey = '';
 
   getCredentials() {}
 
